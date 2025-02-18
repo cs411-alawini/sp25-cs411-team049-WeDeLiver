@@ -1,4 +1,4 @@
-# team049-WeDeLiver
+# Team049-WeDeLiver
 
 ## Basic Information
 
@@ -19,10 +19,10 @@
 
 |   Info      |        Description     |
 | ----------- | ---------------------- |
-|  Title      |       ProjectTitle     |
+|  Title      |      Mood Diary App    |
 | System URL  |      link_to_system    |
 | Video Link  |      link_to_video     |
 
 ## Project Summary
 
-This is a summary of the project!
+This project involves developing a website/app called “Mood Diary app ”. Users can input their mood daily, and by analyzing the mental state of the user, a mood-enhancing playlist can boost the emotional well-being of the user. The app will dynamically adjust the playlist every time the user updates their mood. 

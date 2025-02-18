@@ -1,6 +1,8 @@
 # Team049-WeDeLiver
 We de-liver to deliver.
 
+Please visit our [main documentation](TeamInfo.md)
+
 ## Permission
 You should make sure you allow TAs to access your repository. You can add TA(s) as a collaborator to your repository.
 
