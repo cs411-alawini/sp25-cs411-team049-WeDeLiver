@@ -67,4 +67,4 @@ All attributes on the left side of the dependencies are super keys, therefore, o
 
 **Song**(SongID: INT [PK], Artists: VARCHAR(255), AlbumName: VARCHAR(255), Energy: Decimal, Loudness: Decimal, Mode: Decimal, Acousticness: Decimal, Liveness: Decimal, Valence: Decimal)
 
-**Playlist2Song**(PlaylistID: INT [FK to Playlist.PlaylistID], SongID: INT [FK to Song.SongID])
+**Playlist2Song**(PlaylistID: INT [FK to Playlist.PlaylistID, PK], SongID: INT [FK to Song.SongID, PK])
