@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import userRouter from './routes/user';
 import dotenv from 'dotenv';
-import leaderboardRouter from './routes/moodhealth';
+import leaderboardRouter from './routes/leaderboard';
 import MoodHealth  from './routes/moodhealth';
 const app = express();
 const port = process.env.PORT || 3007;

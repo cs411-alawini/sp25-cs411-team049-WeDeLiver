@@ -2,6 +2,9 @@ import express, { Request, Response, Router } from 'express';
 import { pool } from '../db/db';
 
 const router = Router();
+router.get('/test', (req: Request, res: Response) => {
+    res.status(200).send({ message: 'Leaderboard router is working!' });
+});
 
 // Get leaderboard data
 router.get('/', async (req: Request, res: Response) => {
