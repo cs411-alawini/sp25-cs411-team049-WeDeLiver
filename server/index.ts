@@ -18,7 +18,6 @@ app.get('/api/', (req: Request, res: Response) => {
 app.use('/api/user', userRouter);
 // leaderboard router
 app.use('/api/leaderboard', leaderboardRouter);
-
 app.use('/api/moodhealth', MoodHealth);
 
 app.listen(port, () => {

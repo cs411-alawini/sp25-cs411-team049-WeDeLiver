@@ -1,92 +1,35 @@
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
-import axios from 'axios';
-import { Container, TextInput, Button, Title, Paper, Stack, Text, Notification, Group } from '@mantine/core';
+import Login from './Login/Login';
+import Questions from './Questions/Questions'; // Ensure this path is correct based on your file structure
+import Playlist from './Playlist/Playlist'; // Ensure this path is correct based on your file structure
+import Leaderboard from './Leaderboard/Leaderboard'; // Ensure this path is correct based on your file structure
+import HomePage from './HomePage/HomePage'; // Optional: If you have a home page component
+import { AppHeader } from './AppHeader'; // Ensure this path is correct based on your file structure
+import '@mantine/core/styles.css'; // core styles are required for all packages
 
 function App() {
-  const [id, setId] = useState('');
-  const [user, setUser] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [message, setMessage] = useState('');
+  const [userId, setUserId] = useState(null);  // Track user ID
 
-  const handleSearch = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3007/api/user/${id}`);
-      setUser(response.data);
-      setMessage('');
-    } catch (error) {
-      setUser(null);
-      setMessage('User not found');
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3007/api/user/${id}`);
-      setMessage('User deleted');
-      setUser(null);
-    } catch (error) {
-      setMessage('Error deleting user');
-    }
-  };
-
-  const handlePrintalluser = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3007/api/user`);
-      setUsers(response.data);
-      setMessage('');
-    } catch (error) {
-      setUsers([]);
-      setMessage('Error fetching users');
-    }
+  // A function to handle setting user ID after login or creation
+  const handleLogin = (id) => {
+    setUserId(id);  // Set the userId after login/creation
   };
 
   return (
-    <Container size="sm" padding="md">
-      <Title align="center" mb="lg">User Search</Title>
-      <Paper shadow="xs" padding="md">
-        <Stack spacing="md">
-          <TextInput
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            placeholder="Enter user ID"
-            label="User ID"
-            withAsterisk
-          />
-          <Group position="center">
-            <Button onClick={handleSearch}>Search</Button>
-            <Button onClick={handlePrintalluser} variant="outline">Print All Users</Button>
-          </Group>
-        </Stack>
-      </Paper>
-      {user && (
-        <Paper shadow="xs" padding="md" mt="md">
-          <Title order={4}>User Details</Title>
-          <Text>ID: {user.id}</Text>
-          <Text>Name: {user.name}</Text>
-          <Text>Consecutive Days: {user.consecutivedays}</Text>
-          <Button onClick={() => handleDelete(user.id)} color="red" mt="md">Delete User</Button>
-        </Paper>
-      )}
-      {users.length > 0 && (
-        <Paper shadow="xs" padding="md" mt="md">
-          <Title order={4}>All Users</Title>
-          <Stack spacing="sm">
-            {users.map((user) => (
-              <Paper key={user.id} shadow="xs" padding="sm">
-                <Text>ID: {user.id}</Text>
-                <Text>Name: {user.name}</Text>
-                <Text>Consecutive Days: {user.consecutivedays}</Text>
-              </Paper>
-            ))}
-          </Stack>
-        </Paper>
-      )}
-      {message && (
-        <Notification color="red" mt="md">
-          {message}
-        </Notification>
-      )}
-    </Container>
+    <Router>
+      {/* Conditionally render AppHeader */}
+      {userId && <AppHeader userId={userId} />}  {/* Pass userId to AppHeader only when it's set */}
+      
+      <Routes>
+        <Route path="/" element={<Login onLogin={handleLogin} />} />  {/* Pass onLogin to Login */}
+        <Route path="/questions" element={<Questions userId={userId} />} />
+        <Route path="/playlist" element={<Playlist />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/home" element={<HomePage userId={userId} />} />
+        <Route path="*" element={<h2>404 Not Found</h2>} />  {/* Fallback for undefined routes */}
+      </Routes>
+    </Router>
   );
 }
 

@@ -1,0 +1,52 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fc;
+  }
+  
+  .App {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mantine-Paper-root {
+    text-align: center;
+  }
+  
+  button {
+    background-color: #4CAF50; /* Green background */
+    border: none; /* No borders */
+    color: white; /* White text color */
+    padding: 15px 32px; /* Padding for top/bottom and left/right */
+    text-align: center; /* Center the text */
+    text-decoration: none; /* No underlines */
+    display: inline-block; /* Display as an inline-block element */
+    font-size: 16px; /* Text size */
+    margin: 4px 2px; /* Margin around the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 8px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+  }
+  
+  button:hover {
+    background-color: #45a049; /* Darker green on hover */
+  }
+  
+  
+  .text-input {
+    background-color: #fff; /* White background */
+    border: 2px solid #4CAF50; /* Green border */
+    color: #333; /* Dark text */
+    padding: 12px 20px; /* Padding for the input */
+    font-size: 16px; /* Font size */
+    border-radius: 8px; /* Rounded corners */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+  }
+  
+  .text-input:focus {
+    border-color: #45a049; /* Darker green border on focus */
+    box-shadow: 0 0 5px rgba(72, 192, 72, 0.5); /* Subtle shadow on focus */
+    outline: none; /* Remove the default focus outline */
+  }

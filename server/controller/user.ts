@@ -2,7 +2,6 @@ import { pool } from '../db/db';
 import { User } from '../models/user';
 import {data} from "../../data/testdata";
 
-// get data from testdata.ts
 
 export const getAllUsers = async (): Promise<User[]> => {
     try {
@@ -31,23 +30,32 @@ export const getUserById = async (id: number): Promise<User | null> => {
 };
 
 export const createUser = async (user: User): Promise<User> => {
-    let randomId: number;
-    let userExists = true;
-    randomId = Math.floor(Math.random() * 1000000); 
-    while (userExists) {
-        randomId = Math.floor(Math.random() * 1000000); 
-        userExists = await checkUserExists(randomId);
+    try {
+        let randomId: number;
+        let userExists = true;
+
+        randomId = Math.floor(Math.random() * 1000000);
+        while (userExists) {
+            randomId = Math.floor(Math.random() * 1000000);
+            userExists = await checkUserExists(randomId); 
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO Users (id, name, consecutivedays, LastLoginDate) VALUES (?, ?, ?, CURRENT_DATE())',
+            [randomId, user.name, 0, null]
+        );
+
+        const [rows] = await pool.query('SELECT * FROM Users WHERE id = ?', [randomId]);
+        const users = rows as User[];
+        console.log('Created user:', users[0]); // Log the created user for debugging
+        return users[0];
+
+    } catch (error) {
+        console.error('Error creating user:', error);
+        throw new Error('Internal server error while creating user');
     }
-
-    const [result] = await pool.query(
-        'INSERT INTO users (id, name, consecutivedays) VALUES (?, ?, ?)',
-        [randomId, user.name, 0] 
-    );
-
-    const [rows] = await pool.query('SELECT * FROM Users WHERE id = ?', [randomId]);
-    const users = rows as User[];
-    return users[0];
 };
+
 
 export const deleteUserById = async (id: number): Promise<void> => {
     await pool.query('DELETE FROM Users WHERE id = ?', [id]);
