@@ -1,6 +1,8 @@
 import React, { useState,useEffect } from 'react';
+import { showNotification } from '@mantine/notifications';
 import { Container, Title, Slider, Button, Stack,Box,Center } from '@mantine/core';
 import axios from 'axios'; // Ensure you have axios installed for making HTTP requests
+
 
 export default function SurveyForm({userId}) {
   const [stress, setStress] = useState(5);
@@ -15,14 +17,16 @@ export default function SurveyForm({userId}) {
     const fetchMoodData = async () => {
       try {
         const response = await axios.get(`http://localhost:3007/api/moodhealth/${userId}`);
-        const todayData = response.data.find(entry => entry.Date === date);
+        const todayData = response.data.find((entry) => {
+          const entryDateStr = new Date(entry.Date).toISOString().split('T')[0];
+          return entryDateStr === date;
+        });
         if (todayData) {
           setStress(todayData.StressLevel);
           setAnxiety(todayData.AnxietyLevel);
           setSleep(todayData.SleepHours);
           setIsExistingEntry(true);
         } else {
-          // No data for today, leave as default
           setIsExistingEntry(false);
         }
       } catch (error) {
@@ -46,11 +50,21 @@ export default function SurveyForm({userId}) {
     };
     try {
       await axios.post(`http://localhost:3007/api/moodhealth/${userId}`, moodData); // backend already handles insert or update
-      alert(isExistingEntry ? 'Mood data updated!' : 'Mood data submitted!');
+      // alert(isExistingEntry ? 'Mood data updated!' : 'Mood data submitted!');
       setIsExistingEntry(true); // For UI updates, e.g., button text
+      showNotification({
+        title: 'Success',
+        message: isExistingEntry ? 'Mood entry updated successfully!' : 'Mood entry submitted!',
+        color: 'teal',
+      });
     } catch (error) {
       console.error('Error submitting mood data:', error);
-      alert('Failed to submit mood data. Please try again later.');
+      // alert('Failed to submit mood data. Please try again later.');
+      showNotification({
+        title: 'Error',
+        message: 'Failed to submit mood data. Please try again later.',
+        color: 'red',
+      });
     }
     // try {
     //   await axios.post(`http://localhost:3007/api/moodhealth/${userId}`, moodData);
