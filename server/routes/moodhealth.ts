@@ -5,7 +5,7 @@ import { getMoodHealthByUserId, addMoodHealth } from '../controller/moodhealth';
 const router = Router();
 
 // Get mood health data for a user
-router.get('/:id/moodhealth', async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     try {
         const moodHealthData = await getMoodHealthByUserId(id);
@@ -16,7 +16,7 @@ router.get('/:id/moodhealth', async (req: Request, res: Response) => {
 });
 
 // Add mood health data for a user
-router.post('/:id/moodhealth', async (req: Request, res: Response) => {
+router.post('/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const { date, stressLevel, anxietyLevel, sleepHours } = req.body;
     const newMoodHealth = { userId: id, date, stressLevel, anxietyLevel, sleepHours, moodScore: 0 }; // moodScore will be calculated in the controller
@@ -30,7 +30,7 @@ router.post('/:id/moodhealth', async (req: Request, res: Response) => {
 
 
 //delete mood health data for a user
-router.delete('/:id/moodhealth/:date', async (req: Request, res: Response) => {
+router.delete('/:id/:date', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const date = req.params.date;
     try {

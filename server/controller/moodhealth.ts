@@ -23,17 +23,36 @@ export const getMoodHealthByUserId = async (userId: number): Promise<MoodHealth[
 
 
 export const addMoodHealth = async (moodHealth: MoodHealth): Promise<void> => {
-    try { 
-        const moodScore = calculateMoodScore(moodHealth.stressLevel, moodHealth.anxietyLevel, moodHealth.sleepHours);
-        await pool.query(
-            'INSERT INTO MoodHealth (UserID, Date, StressLevel, AnxietyLevel, SleepHours, MoodScore) VALUES (?, ?, ?, ?, ?, ?)',
-            [moodHealth.userId, moodHealth.date, moodHealth.stressLevel, moodHealth.anxietyLevel, moodHealth.sleepHours, moodScore]
-        );
+    try {
+      const moodScore = calculateMoodScore(
+        moodHealth.stressLevel,
+        moodHealth.anxietyLevel,
+        moodHealth.sleepHours
+      );
+  
+      await pool.query(
+        `INSERT INTO MoodHealth 
+          (UserID, Date, StressLevel, AnxietyLevel, SleepHours, MoodScore) 
+         VALUES (?, ?, ?, ?, ?, ?) 
+         ON DUPLICATE KEY UPDATE 
+          StressLevel = VALUES(StressLevel),
+          AnxietyLevel = VALUES(AnxietyLevel),
+          SleepHours = VALUES(SleepHours),
+          MoodScore = VALUES(MoodScore)`,
+        [
+          moodHealth.userId,
+          moodHealth.date,
+          moodHealth.stressLevel,
+          moodHealth.anxietyLevel,
+          moodHealth.sleepHours,
+          moodScore,
+        ]
+      );
     } catch (error) {
-        console.error('Error adding mood health data:', error);
-        throw error;
+      console.error('Error adding/updating mood health data:', error);
+      throw error;
     }
-}
+  };
 
 export const deleteMoodHealthData = async (id: number, date: string): Promise<void> => {
     try {
