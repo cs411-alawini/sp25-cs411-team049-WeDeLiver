@@ -13,6 +13,11 @@ export const getAllUsers = async (): Promise<User[]> => {
         throw error;
     }
 };
+export const checkUserExists = async (id: number): Promise<boolean> => {
+    const [rows] = await pool.query('SELECT * FROM Users WHERE id = ?', [id]);
+    return (rows as User[]).length > 0;
+};
+
 export const getUserByName = async (name: string): Promise<User | null> => {
     const [rows] = await pool.query('SELECT * FROM Users WHERE name = ?', [name]);
     const users = rows as User[];
@@ -26,12 +31,20 @@ export const getUserById = async (id: number): Promise<User | null> => {
 };
 
 export const createUser = async (user: User): Promise<User> => {
+    let randomId: number;
+    let userExists = true;
+    randomId = Math.floor(Math.random() * 1000000); 
+    while (userExists) {
+        randomId = Math.floor(Math.random() * 1000000); 
+        userExists = await checkUserExists(randomId);
+    }
+
     const [result] = await pool.query(
-        'INSERT INTO users (name, consecutivedays) VALUES (?, ?)',
-        [user.name, user.consecutivedays]
+        'INSERT INTO users (id, name, consecutivedays) VALUES (?, ?, ?)',
+        [randomId, user.name, 0] 
     );
-    const insertId = (result as any).insertId;
-    const [rows] = await pool.query('SELECT * FROM Users WHERE id = ?', [insertId]);
+
+    const [rows] = await pool.query('SELECT * FROM Users WHERE id = ?', [randomId]);
     const users = rows as User[];
     return users[0];
 };

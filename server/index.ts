@@ -3,7 +3,7 @@ import cors from 'cors';
 import userRouter from './routes/user';
 import dotenv from 'dotenv';
 import leaderboardRouter from './routes/moodhealth';
-import { MoodHealth } from './models/moodhealth';
+import MoodHealth  from './routes/moodhealth';
 const app = express();
 const port = process.env.PORT || 3007;
 
@@ -18,7 +18,8 @@ app.get('/api/', (req: Request, res: Response) => {
 app.use('/api/user', userRouter);
 // leaderboard router
 app.use('/api/leaderboard', leaderboardRouter);
-app.use('/api/moodhealth', leaderboardRouter);
+
+app.use('/api/moodhealth', MoodHealth);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
