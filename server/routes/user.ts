@@ -1,4 +1,3 @@
-// filepath: /Users/niniyu0127/Code/sp25-cs411-team049-WeDeLiver/server/routes/user.ts
 import express, { Request, Response, Router } from 'express';
 import { getAllUsers, getUserByName, getUserById, createUser, deleteUserById } from '../controller/user';
 
