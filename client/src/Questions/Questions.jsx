@@ -1,15 +1,18 @@
 import React, { useState,useEffect } from 'react';
 import { showNotification } from '@mantine/notifications';
 import { Container, Title, Slider, Button, Stack,Box,Center } from '@mantine/core';
-import axios from 'axios'; // Ensure you have axios installed for making HTTP requests
+import Navbar from './Navbar'; 
+import axios from 'axios'; 
+import MoodSliders from './MoodSliders'; 
 
-
-export default function SurveyForm({userId}) {
+export default function SurveyForm({ userId }) {
   const [stress, setStress] = useState(5);
   const [anxiety, setAnxiety] = useState(5);
   const [sleep, setSleep] = useState(7);
   const [isExistingEntry, setIsExistingEntry] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedMood, setSelectedMood] = useState(null);
+  const [refreshMoodList, setRefreshMoodList] = useState(false);
 
   const date = new Date().toISOString().split('T')[0];
 
@@ -26,8 +29,13 @@ export default function SurveyForm({userId}) {
           setAnxiety(todayData.AnxietyLevel);
           setSleep(todayData.SleepHours);
           setIsExistingEntry(true);
+          setSelectedMood({
+            ...todayData,
+            date: new Date(todayData.Date).toISOString().split('T')[0],
+          });
         } else {
           setIsExistingEntry(false);
+          setSelectedMood(null);
         }
       } catch (error) {
         console.error('Failed to fetch mood data:', error);
@@ -39,102 +47,123 @@ export default function SurveyForm({userId}) {
     fetchMoodData();
   }, [userId, date]);
 
-  
+  useEffect(() => {
+    if (selectedMood) {
+      setStress(selectedMood.StressLevel);
+      setAnxiety(selectedMood.AnxietyLevel);
+      setSleep(selectedMood.SleepHours);
+
+      const selectedDateStr = new Date(selectedMood.date).toISOString().split('T')[0];
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      if (selectedDateStr === todayStr) {
+        setIsExistingEntry(true); 
+      } else {
+        setIsExistingEntry(false); 
+      }
+    } else {
+      setIsExistingEntry(false);
+    }
+  }, [selectedMood]);
+
   const handleSubmit = async () => {
     const moodData = {
-      userId, // Assuming userId is passed in from props or context
-      date: date,
+      userId,
+      date,
       stressLevel: stress,
       anxietyLevel: anxiety,
       sleepHours: sleep,
     };
     try {
-      await axios.post(`http://localhost:3007/api/moodhealth/${userId}`, moodData); // backend already handles insert or update
-      // alert(isExistingEntry ? 'Mood data updated!' : 'Mood data submitted!');
-      setIsExistingEntry(true); // For UI updates, e.g., button text
+      await axios.post(`http://localhost:3007/api/moodhealth/${userId}`, moodData);
+      setIsExistingEntry(true);
       showNotification({
         title: 'Success',
         message: isExistingEntry ? 'Mood entry updated successfully!' : 'Mood entry submitted!',
         color: 'teal',
       });
+      setRefreshMoodList((prev) => !prev);
     } catch (error) {
       console.error('Error submitting mood data:', error);
-      // alert('Failed to submit mood data. Please try again later.');
       showNotification({
         title: 'Error',
         message: 'Failed to submit mood data. Please try again later.',
         color: 'red',
       });
     }
-    // try {
-    //   await axios.post(`http://localhost:3007/api/moodhealth/${userId}`, moodData);
-    //   const data = await axios.get(`http://localhost:3007/api/moodhealth/${userId}`); // Optional: Fetch the updated mood data for confirmation
-    //   console.log('Mood data submitted successfully:', data); // For debugging purposes
-    // } catch (error) {
-    //   console.error('Error submitting mood data:', error);
-    //   alert('Failed to submit mood data. Please try again later.');
-    //   return; // Exit the function if the request fails
-    // }
   };
+
+  const handleDelete = async () => {
+    if (!selectedMood) return;
+  
+    try {
+      await axios.delete(`http://localhost:3007/api/moodhealth/${userId}/${selectedMood.date}`);
+      showNotification({
+        title: 'Deleted',
+        message: `Mood entry for ${selectedMood.date} deleted successfully.`,
+        color: 'red',
+      });
+      setSelectedMood(null);
+      setStress(5);
+      setAnxiety(5);
+      setSleep(7);
+      setIsExistingEntry(false);
+      setRefreshMoodList((prev) => !prev); // refresh sidebar
+    } catch (error) {
+      console.error('Error deleting mood data:', error);
+      showNotification({
+        title: 'Error',
+        message: 'Failed to delete mood entry.',
+        color: 'red',
+      });
+    }
+  };
+  
+  
 
   return (
     <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Navbar userId={userId} setSelectedMood={setSelectedMood} refresh={refreshMoodList} />
       <Container size="sm">
-
         <Stack spacing="xl">
           <Title order={2} align="center">Daily Wellness Survey</Title>
 
-          <Box>
-            <Title order={5} mb="xs">How stressed are you feeling today?</Title>
-            <Slider
-              value={stress}
-              onChange={setStress}
-              min={1}
-              max={10}
-              step={1}
-              marks={[
-                { value: 1, label: '1' },
-                { value: 10, label: '10' },
-              ]}
-            />
-          </Box>
-
-          <Box>
-            <Title order={5} mb="xs">How anxious or on-edge are you feeling today?</Title>
-            <Slider
-              value={anxiety}
-              onChange={setAnxiety}
-              min={1}
-              max={10}
-              step={1}
-              marks={[
-                { value: 1, label: '1' },
-                { value: 10, label: '10' },
-              ]}
-            />
-          </Box>
-
-          <Box>
-            <Title order={5} mb="xs">How many hours did you sleep last night?</Title>
-            <Slider
-              value={sleep}
-              onChange={setSleep}
-              min={0}
-              max={14}
-              step={0.5}
-              marks={[
-                { value: 0, label: '0' },
-                { value: 7, label: '7' },
-                { value: 14, label: '14' },
-              ]}
-            />
-          </Box>
+          <MoodSliders
+            stress={stress}
+            setStress={setStress}
+            anxiety={anxiety}
+            setAnxiety={setAnxiety}
+            sleep={sleep}
+            setSleep={setSleep}
+          />
 
           <Center>
-            <Button size="md" onClick={handleSubmit}>
-              {isExistingEntry ? 'Update Entry' : 'Submit'}
-            </Button>
+            <Stack spacing="sm">
+              {!selectedMood && !isExistingEntry && (
+                <Button size="md" onClick={handleSubmit}>
+                  Submit
+                </Button>
+              )}
+              {selectedMood?.date === date && isExistingEntry && (
+                <Button size="md" onClick={handleSubmit}>
+                  Update Entry
+                </Button>
+              )}
+              {selectedMood && (
+                <Button
+                  size="md"
+                  color="red"
+                  variant="outline"
+                  onClick={handleDelete}
+                >
+                  Delete Entry
+                </Button>
+              )}
+            </Stack>
           </Center>
+
+
+
         </Stack>
       </Container>
     </Box>

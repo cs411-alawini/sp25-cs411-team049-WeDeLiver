@@ -18,7 +18,7 @@ export const getAllPlaylist = async (): Promise<Playlist[]> => {
 // Get playlist by user
 export const getPlaylistByUser = async (userId: number): Promise<Playlist[]> => {
     try {
-        const [rows] = await pool.query('SELECT * FROM Playlist WHERE UserID = ?', [userId]);
+        const [rows] = await pool.query('SELECT * FROM Playlist WHERE UserID = ? order by Date desc', [userId]);
         return rows as Playlist[];
     } catch (error) {
         console.error('Error getting playlist by user:', error);
