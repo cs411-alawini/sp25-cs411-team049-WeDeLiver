@@ -15,8 +15,6 @@ export default function SurveyForm({ userId }) {
   const [refreshMoodList, setRefreshMoodList] = useState(false);
 
   const date = new Date().toISOString().split('T')[0];
-  const selectedDate = selectedMood ? new Date(selectedMood.date).toISOString().split('T')[0] : null;
-
 
   useEffect(() => {
     const fetchMoodData = async () => {
