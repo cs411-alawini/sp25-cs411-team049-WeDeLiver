@@ -18,7 +18,7 @@ export function AppHeader({ userId }) {
 
   return (
     <header className={classes.header}>
-      <Container size="md">
+      <Container fluid>
         <div className={classes.inner}>
           <Group gap={20} visibleFrom="sm">
             {links.map((link) => (
@@ -30,9 +30,11 @@ export function AppHeader({ userId }) {
 
           <Group gap={20} align="center">
             <Text className={classes.userId}>{userId}</Text>  {/* Display user ID */}
-          </Group>
+          
 
           <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
+          </Group>
+
         </div>
       </Container>
     </header>

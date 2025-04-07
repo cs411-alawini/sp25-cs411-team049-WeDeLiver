@@ -3,3 +3,14 @@ node_modules/
 .env
 package-lock.json
 .DS_Store
+clean.py
+cleaned_file.csv
+cleaned_songs.csv
+dataGenerate.py
+playlists.csv
+playlist2song.csv
+Song.csv
+train.csv
+
+
+
