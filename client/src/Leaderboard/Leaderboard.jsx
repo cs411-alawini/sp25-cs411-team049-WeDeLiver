@@ -41,7 +41,7 @@ export default function Leaderboard() {
       ) : (
         <Paper shadow="md" radius="md" withBorder p="md">
           <Table highlightOnHover striped>
-            <thead>
+            <thead style={{ borderBottom: '2px solid #000' }}>
               <tr>
                 <th>#</th>
                 <th>Name</th>
