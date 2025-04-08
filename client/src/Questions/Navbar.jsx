@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { IconDatabaseImport } from '@tabler/icons-react';
+import { IconDatabaseImport, IconSearch } from '@tabler/icons-react';
+import { TextInput } from '@mantine/core';
 import classes from './Navbar.module.css';
 import axios from 'axios';
 
 export default function Navbar({ userId, setSelectedMood, refresh }) {
   const [activeDate, setActiveDate] = useState('');
   const [moodEntries, setMoodEntries] = useState([]);
+  const [filteredEntries, setFilteredEntries] = useState([]);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     async function fetchMoodHealth() {
@@ -19,10 +22,11 @@ export default function Navbar({ userId, setSelectedMood, refresh }) {
         }));
 
         setMoodEntries(structuredData);
+        setFilteredEntries(structuredData);
 
         if (structuredData.length > 0 && !activeDate) {
-            handleClick(structuredData[0]);
-          }
+          handleClick(structuredData[0]);
+        }
       } catch (error) {
         console.error('Failed to fetch mood entries:', error);
       }
@@ -33,13 +37,20 @@ export default function Navbar({ userId, setSelectedMood, refresh }) {
     }
   }, [userId, refresh]);
 
+  useEffect(() => {
+    const filtered = moodEntries.filter((entry) =>
+      entry.date.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredEntries(filtered);
+  }, [search, moodEntries]);
+
   const handleClick = (mood) => {
     setActiveDate(mood.date);
     setSelectedMood(mood);
     console.log('Selected mood health data:', mood);
   };
 
-  const moodLinks = moodEntries.map((entry) => (
+  const moodLinks = filteredEntries.map((entry) => (
     <a
       className={classes.link}
       data-active={entry.date === activeDate || undefined}
@@ -66,11 +77,21 @@ export default function Navbar({ userId, setSelectedMood, refresh }) {
       </div>
     </a>
   ));
-  
 
   return (
     <div>
       <nav className={classes.navbar}>
+        <TextInput
+          placeholder="Search"
+          size="sm"
+          leftSection={<IconSearch size={12} stroke={1.5} />}
+          styles={{
+            input: { width: '270px', marginBottom: '1rem', marginTop: '0.5rem'},
+            section: { pointerEvents: 'none' }
+          }}
+          value={search}
+          onChange={(event) => setSearch(event.currentTarget.value)}
+        />
         <div className={classes.navbarMain}>{moodLinks}</div>
       </nav>
     </div>

@@ -21,9 +21,6 @@ router.get('/:userId', async (req: Request, res: Response) => {
     }
     try {
         const playlist = await getPlaylistByUser(userId);
-        if (playlist.length === 0) {
-            res.status(404).json({ message: 'Playlist not found' });
-        }
         res.status(200).json(playlist);
     } catch (error) {
         console.error(error);

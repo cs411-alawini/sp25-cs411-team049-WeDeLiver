@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
-import { IconDatabaseImport } from '@tabler/icons-react';
-import { Table } from '@mantine/core';
+import { IconDatabaseImport, IconSearch } from '@tabler/icons-react';
+import { TextInput } from '@mantine/core';
 import classes from './Navbar.module.css';
 import axios from 'axios';
 
 export default function Navbar({ userId, setSelectedPlaylist }) {
   const [active, setActive] = useState('');
   const [playlists, setPlaylists] = useState([]);
-  const [songs, setSongs] = useState([]); // State to hold the songs of the selected playlist
+  const [filteredPlaylists, setFilteredPlaylists] = useState([]);
+  const [search, setSearch] = useState('');
+  const [songs, setSongs] = useState([]);
 
   useEffect(() => {
     async function fetchPlaylists() {
@@ -17,14 +19,14 @@ export default function Navbar({ userId, setSelectedPlaylist }) {
         const structuredPlaylist = fetchedPlaylists.map((playlist) => ({
           PlaylistID: playlist.PlaylistID,
           UserID: playlist.UserID,
-          Date: new Date(playlist.Date).toISOString().split('T')[0], // Format date as needed
+          Date: new Date(playlist.Date).toISOString().split('T')[0],
         }));
 
         setPlaylists(structuredPlaylist);
+        setFilteredPlaylists(structuredPlaylist);
 
-        if (fetchedPlaylists.length > 0) {
-          // Automatically select the first playlist
-          handleClick(fetchedPlaylists[0]);
+        if (structuredPlaylist.length > 0) {
+          handleClick(structuredPlaylist[0]);
         }
       } catch (error) {
         console.error('Failed to fetch playlists:', error);
@@ -36,30 +38,31 @@ export default function Navbar({ userId, setSelectedPlaylist }) {
     }
   }, [userId]);
 
-const handleClick = async (playlist) => {
-  setActive(playlist.PlaylistID);
-  try {
-    console.log('Fetching songs for playlist:', playlist); // For debugging purposes
-    const response = await axios.get(`http://localhost:3007/api/playlist/song/${playlist.PlaylistID}`);
-    const result = response.data || [];
-    // Set the songs and include the playlist name
-    console.log('Fetched songs:', result); // For debugging purposes
-    setSongs(result);
-    setSelectedPlaylist({
-      songs: result
-    });
-  } catch (error) {
-    console.error('Failed to fetch playlist content:', error);
-  }
-};
+  useEffect(() => {
+    const filtered = playlists.filter((p) =>
+      p.Date.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredPlaylists(filtered);
+  }, [search, playlists]);
 
+  const handleClick = async (playlist) => {
+    setActive(playlist.PlaylistID);
+    try {
+      const response = await axios.get(`http://localhost:3007/api/playlist/song/${playlist.PlaylistID}`);
+      const result = response.data || [];
+      setSongs(result);
+      setSelectedPlaylist({ songs: result });
+    } catch (error) {
+      console.error('Failed to fetch playlist content:', error);
+    }
+  };
 
-  const playlistLinks = playlists.map((playlist) => (
+  const playlistLinks = filteredPlaylists.map((playlist) => (
     <a
       className={classes.link}
-      data-active={playlist.PlaylistID  === active || undefined}
+      data-active={playlist.PlaylistID === active || undefined}
       href="#"
-      key={playlist.playlistId}
+      key={playlist.PlaylistID}
       onClick={(event) => {
         event.preventDefault();
         handleClick(playlist);
@@ -70,13 +73,22 @@ const handleClick = async (playlist) => {
     </a>
   ));
 
-  // Define the table rows using the song data
   return (
     <div>
       <nav className={classes.navbar}>
+        <TextInput
+          placeholder="Search"
+          size="sm"
+          leftSection={<IconSearch size={12} stroke={1.5} />}
+          styles={{
+            input: { width: '270px', marginBottom: '1rem', marginTop: '0.5rem'},
+            section: { pointerEvents: 'none' }
+          }}
+          value={search}
+          onChange={(event) => setSearch(event.currentTarget.value)}
+        />
         <div className={classes.navbarMain}>{playlistLinks}</div>
       </nav>
-
     </div>
   );
 }
