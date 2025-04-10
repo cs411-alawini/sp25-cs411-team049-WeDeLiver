@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Paper, Title, Text, Loader, Group } from '@mantine/core';
+import { Container, Paper, Title, Text, Loader, Group,SemiCircleProgress } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,6 +7,14 @@ function HomePage({ userId }) {
   const [user, setUser] = useState(null);
   const [averages, setAverages] = useState(null);
   const navigate = useNavigate();
+  const moodEmojiMap = {
+    "Excellent": "😄",
+    "Good": "😊",
+    "Okay": "😐",
+    "Low": "😟",
+    "Very Low": "😢"
+  };
+
 
   useEffect(() => {
     if (!userId) {
@@ -49,13 +57,64 @@ function HomePage({ userId }) {
         </Text>
 
         <Paper shadow="xs" p="md" mt="xl" withBorder>
-          <Title order={4}>Your Mood Averages (Last 7 Days)</Title>
-          <Text mt="sm">Average Stress Level: <strong>{Number(averages.AvgStress).toFixed(2)}</strong> /10 </Text>
-          <Text>Average Anxiety Level: <strong>{Number(averages.AvgAnxiety).toFixed(2)}</strong> /10</Text>
-          <Text>Average Sleep Hours: <strong>{Number(averages.AvgSleep).toFixed(2)}</strong></Text>
-          <Text>Average Mood Score: <strong>{Number(averages.AvgMood).toFixed(2)}</strong> /100</Text>
+  <Title order={4} align="center" mb="md">
+    Your Mood Averages (Last 7 Days)
+  </Title>
 
-        </Paper>
+  <Group position="apart" grow>
+    <SemiCircleProgress
+      value={Number(averages.AvgStress) * 10}
+      size={150}
+      thickness={15}
+      fillDirection="left-to-right"
+      orientation="up"
+      filledSegmentColor="red"
+      label={`Stress: ${Number(averages.AvgStress).toFixed(2)}/10`}
+      emptySegmentColor="var(--mantine-color-gray-3)"
+    />
+
+    <SemiCircleProgress
+      value={Number(averages.AvgAnxiety) * 10}
+      size={150}
+      thickness={15}
+      fillDirection="left-to-right"
+      orientation="up"
+      filledSegmentColor="orange"
+      label={`Anxiety: ${Number(averages.AvgAnxiety).toFixed(2)}/10`}
+      emptySegmentColor="var(--mantine-color-gray-3)"
+    />
+
+    <SemiCircleProgress
+      value={(Number(averages.AvgSleep) / 10) * 100}
+      size={150}
+      thickness={15}
+      fillDirection="left-to-right"
+      orientation="up"
+      filledSegmentColor="blue"
+      label={`Sleep: ${Number(averages.AvgSleep).toFixed(2)} hrs`}
+      emptySegmentColor="var(--mantine-color-gray-3)"
+    />
+
+    <SemiCircleProgress
+      value={Number(averages.AvgMood)}
+      size={150}
+      thickness={15}
+      fillDirection="left-to-right"
+      orientation="up"
+      filledSegmentColor="green"
+      label={`Mood: ${Number(averages.AvgMood).toFixed(2)}/100`}
+      emptySegmentColor="var(--mantine-color-gray-3)"
+    />
+  </Group>
+
+  {/* Mood Interpretation moved here */}
+  <Text align="center" mt="lg" size="lg" weight={600}>
+    Mood Interpretation: <span style={{ color: 'green' }}>
+      {moodEmojiMap[averages.MoodInterpretation]} {averages.MoodInterpretation}
+    </span>
+  </Text>
+</Paper>
+
       </Container>
     </div>
   );
