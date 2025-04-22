@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Burger, Container, Group, Text } from '@mantine/core';
+import { Burger, Container, Group, Text, Button, ActionIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import classes from './AppHeader.module.css';
+import { IconLogout } from '@tabler/icons-react';
 
 const links = [
   { path: '/home', label: 'Home' },
@@ -12,7 +13,8 @@ const links = [
   { path: '/leaderboard', label: 'Leaderboard' },
 ];
 
-export function AppHeader({ userId }) {
+export function AppHeader({ userId, onLogout }) {
+  const navigate = useNavigate();
   const [opened, { toggle }] = useDisclosure(false);
   const [userName, setUserName] = useState('');
 
@@ -47,6 +49,9 @@ export function AppHeader({ userId }) {
                 {userName}, {userId}
               </Text>
             )}
+            <ActionIcon variant="transparent" color="red" size="xs" onClick={() => { onLogout(); navigate('/'); }}>
+              <IconLogout size={16} />
+            </ActionIcon>
             <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
           </Group>
         </div>
