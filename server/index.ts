@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import leaderboardRouter from './routes/leaderboard';
 import moodHealthRouter from './routes/moodhealth'; 
 import playlistRouter from './routes/playlist';
+import generatePlaylistRouter from './routes/generatePlaylist';
 
 dotenv.config();
 
@@ -21,7 +22,8 @@ app.get('/api/', (req: Request, res: Response) => {
 app.use('/api/user', userRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/moodhealth', moodHealthRouter);
-app.use('/api/playlist', playlistRouter); 
+app.use('/api/playlist', playlistRouter);
+app.use('/api/generate-playlist', generatePlaylistRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
