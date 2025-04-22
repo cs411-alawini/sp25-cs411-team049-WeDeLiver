@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Paper, Title, Text, Loader, Group,SemiCircleProgress } from '@mantine/core';
+import { Container, Paper, Title, Text, Loader, Group,SemiCircleProgress, Button } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function HomePage({ userId }) {
   const [user, setUser] = useState(null);
   const [averages, setAverages] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
   const moodEmojiMap = {
     "Excellent": "😄",
@@ -38,6 +39,20 @@ function HomePage({ userId }) {
   }, [userId, navigate]);
   
 
+  const handleGeneratePlaylist = async () => {
+    setIsGenerating(true);
+    try {
+      const response = await axios.post(`http://localhost:3007/api/generate-playlist/${userId}`);
+      alert('Playlist generated successfully!');
+      navigate('/playlist'); // Navigate to playlist page
+    } catch (error) {
+      console.error('Error generating playlist:', error);
+      alert('Failed to generate playlist. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   if (!user || !averages) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', padding: '2rem' }}>
@@ -55,6 +70,17 @@ function HomePage({ userId }) {
         <Text align="center" mt="md">
           You're logged in as <strong>{user.ID}</strong>
         </Text>
+
+        <Button 
+          fullWidth 
+          mt="md" 
+          onClick={handleGeneratePlaylist}
+          loading={isGenerating}
+          variant="gradient"
+          gradient={{ from: 'indigo', to: 'cyan' }}
+        >
+          Generate Mood-Based Playlist
+        </Button>
 
         <Paper shadow="xs" p="md" mt="xl" withBorder>
   <Title order={4} align="center" mb="md">
