@@ -1,4 +1,5 @@
 import React, { useState,useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { Container, Title, Slider, Button, Stack,Box,Center } from '@mantine/core';
 import Navbar from './Navbar'; 
@@ -6,6 +7,14 @@ import axios from 'axios';
 import MoodSliders from './MoodSliders'; 
 
 export default function SurveyForm({ userId }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userId) {
+      navigate('/');
+    }
+  }, [userId, navigate]);
+
   const [stress, setStress] = useState(5);
   const [anxiety, setAnxiety] = useState(5);
   const [sleep, setSleep] = useState(7);

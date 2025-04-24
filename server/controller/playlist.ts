@@ -1,6 +1,5 @@
 import { pool } from '../db/db';
 import  {Playlist} from '../models/playlist';
-import { Playlist2Song} from '../models/playlist2song';
 import {Song} from '../models/song'
 
 
@@ -29,7 +28,7 @@ export const getPlaylistByUser = async (userId: number): Promise<Playlist[]> => 
 //get song by playlist
 export const getSongByPlaylist = async (playlistId: number): Promise<Song[]> => {
     try {
-        const [rows] = await pool.query('SELECT AlbumName, TrackName, Artists FROM CS411.Playlist2Song natural join CS411.Song WHERE PlaylistID = ? order by Artists', [playlistId]);
+        const [rows] = await pool.query('SELECT TrackID FROM CS411.Playlist2Song natural join CS411.Song WHERE PlaylistID = ? order by Artists', [playlistId]);
         return rows as Song[];
     } catch (error) {
         console.error('Error getting song by playlist:', error);
