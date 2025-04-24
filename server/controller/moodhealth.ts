@@ -13,7 +13,7 @@ const calculateMoodScore = (stressLevel: number, anxietyLevel: number, sleepHour
 
 export const getMoodHealthByUserId = async (userId: number): Promise<MoodHealth[]> => {
     try {
-        const [rows] = await pool.query('SELECT * FROM MoodHealth WHERE UserID = ?', [userId]);
+        const [rows] = await pool.query('SELECT * FROM MoodHealth WHERE UserID = ? order by Date desc', [userId]);
         return rows as MoodHealth[];
     } catch (error) {
         console.error('Error getting mood health data:', error);

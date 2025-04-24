@@ -15,7 +15,7 @@ router.get('/', async (req: Request, res: Response) => {
             LEFT JOIN Playlist p ON u.ID = p.UserID
             GROUP BY u.ID, u.Name, u.Consecutivedays
             ORDER BY u.Consecutivedays DESC, playlist_count DESC
-            LIMIT 10;
+            LIMIT 20;
         `;
         const [rows] = await pool.query(query);
         res.status(200).json(rows);
