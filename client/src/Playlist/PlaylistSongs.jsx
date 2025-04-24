@@ -2,7 +2,7 @@ import { Table, Container, Paper } from '@mantine/core';
 
 export default function PlaylistTable({ songs }) {
   if (!songs) {
-    return <div>No songs available in this playlist.</div>;
+    return <div>You have not generated any playlists</div>;
   }
 
   const rows = songs.map((song, index) => (

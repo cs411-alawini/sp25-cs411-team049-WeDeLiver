@@ -1,0 +1,23 @@
+{
+  "name": "cs-411",
+  "version": "1.0.0",
+  "description": "We de-liver to deliver.",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "dev": "concurrently",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cs411-alawini/sp25-cs411-team049-WeDeLiver.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cs411-alawini/sp25-cs411-team049-WeDeLiver/issues"
+  },
+  "homepage": "https://github.com/cs411-alawini/sp25-cs411-team049-WeDeLiver#readme"
+}
