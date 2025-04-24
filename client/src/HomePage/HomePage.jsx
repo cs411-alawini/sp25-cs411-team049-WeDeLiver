@@ -52,7 +52,7 @@ function HomePage({ userId }) {
       setIsGenerating(false);
     }
   };
-//Megan changed
+//changed
   if (!user || !averages) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', padding: '2rem' }}>
