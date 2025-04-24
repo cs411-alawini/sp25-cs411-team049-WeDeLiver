@@ -52,13 +52,16 @@ function HomePage({ userId }) {
       setIsGenerating(false);
     }
   };
-
+//changed
   if (!user || !averages) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-        <Loader />
+         <div style={{ textAlign: 'center' }}>
+        <h3>No scores found</h3>
+        <p>Please complete a survey to start generating playlists!</p>
       </div>
-    );
+    </div>
+  );
   }
 
   return (
@@ -89,23 +92,31 @@ function HomePage({ userId }) {
 
   <Group position="apart" grow>
     <SemiCircleProgress
-      value={Number(averages.AvgStress) * 10}
+      value={100 - Number(averages.AvgStress) * 10}
       size={150}
       thickness={15}
       fillDirection="left-to-right"
       orientation="up"
-      filledSegmentColor="red"
+      filledSegmentColor={
+      averages.AvgStress >= 7 ? '#ff6b6b' :  // Red for high stress
+      averages.AvgStress >= 4 ? '#ffa502' :  // Orange for medium
+      '#51cf66'                              // Green for low
+      }
       label={`Stress: ${Number(averages.AvgStress).toFixed(2)}/10`}
       emptySegmentColor="var(--mantine-color-gray-3)"
     />
 
     <SemiCircleProgress
-      value={Number(averages.AvgAnxiety) * 10}
+      value={100 - Number(averages.AvgAnxiety) * 10}
       size={150}
       thickness={15}
       fillDirection="left-to-right"
       orientation="up"
-      filledSegmentColor="orange"
+      filledSegmentColor={
+        averages.AvgAnxiety >= 7 ? '#ff6b6b' :  // Red for high anxiety
+        averages.AvgAnxiety >= 4 ? '#ffa502' :  // Orange for medium
+        '#51cf66'                              // Green for low
+        }
       label={`Anxiety: ${Number(averages.AvgAnxiety).toFixed(2)}/10`}
       emptySegmentColor="var(--mantine-color-gray-3)"
     />
@@ -116,7 +127,11 @@ function HomePage({ userId }) {
       thickness={15}
       fillDirection="left-to-right"
       orientation="up"
-      filledSegmentColor="blue"
+      filledSegmentColor={
+        averages.AvgSleep >= 8 ? '#51cf66' :  // Green for a lot of sleep
+        averages.AvgSleep >= 6 ? '#ffa502' :  // Orange for medium
+        '#ff6b6b'                             // Green for low
+        }
       label={`Sleep: ${Number(averages.AvgSleep).toFixed(2)} hrs`}
       emptySegmentColor="var(--mantine-color-gray-3)"
     />
@@ -127,7 +142,11 @@ function HomePage({ userId }) {
       thickness={15}
       fillDirection="left-to-right"
       orientation="up"
-      filledSegmentColor="green"
+      filledSegmentColor={
+        averages.AvgMood >= 70 ? '#51cf66' :  // Green for high score
+        averages.AvgMood >= 40 ? '#ffa502' :  // Orange for medium
+        '#ff6b6b'                             // Green for low
+        }
       label={`Mood: ${Number(averages.AvgMood).toFixed(2)}/100`}
       emptySegmentColor="var(--mantine-color-gray-3)"
     />
