@@ -61,4 +61,13 @@ export const deleteMoodHealthData = async (id: number, date: string): Promise<vo
         console.error('Error deleting mood health data:', error);
         throw error;
     }
-}   
+};
+
+export const getMoodHealthByText = async (text: string): Promise<MoodHealth[]> => {
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    console.error('Error parsing mood health data from text:', error);
+    throw error;
+  }
+}
