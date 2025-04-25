@@ -35,7 +35,7 @@ function App() {
         <Route path="/" element={<Login onLogin={handleLogin} />} />  {/* Pass onLogin to Login */}
         <Route path="/questions" element={<Questions userId={userId} />} />
         <Route path="/playlist" element={<Playlist userId={userId} />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/leaderboard" element={<Leaderboard userId={userId} />} />
         <Route path="/home" element={<HomePage userId={userId} />} />
         <Route path="*" element={<h2>404 Not Found</h2>} />  {/* Fallback for undefined routes */}
       </Routes>

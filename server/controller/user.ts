@@ -39,10 +39,10 @@ export const createUser = async (user: User): Promise<User> => {
             randomId = Math.floor(Math.random() * 1000000);
             userExists = await checkUserExists(randomId); 
         }
-
+        console.log(user);
         const [result] = await pool.query(
-            'INSERT INTO Users (id, name, consecutivedays, LastLoginDate) VALUES (?, ?, ?, CURRENT_DATE())',
-            [randomId, user.name, 0, null]
+            'INSERT INTO Users (id, name, consecutivedays, Country, LastLoginDate) VALUES (?, ?, ?, ?, CURRENT_DATE())',
+            [randomId, user.name, 0, user.country, null]
         );
 
         const [rows] = await pool.query('SELECT * FROM Users WHERE id = ?', [randomId]);
