@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import {  getAllPlaylist, getPlaylistByUser, getSongByPlaylist } from '../controller/playlist';
+import {  getAllPlaylist, getPlaylistByUser, getSongByPlaylist, deletePlaylist } from '../controller/playlist';
 
 
 const router = Router();
@@ -40,6 +40,21 @@ router.get('/song/:playlistId', async (req: Request, res: Response) => {
             res.status(404).json({ message: 'Song not found' });
         }
         res.status(200).json(song);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Delete playlist
+router.delete('/:playlistId', async (req: Request, res: Response) => {
+    const playlistId = parseInt(req.params.playlistId);
+    if (isNaN(playlistId)) {
+        res.status(400).json({ message: 'Invalid playlist ID' });
+    }
+    try {
+        await deletePlaylist(playlistId);
+        res.status(200).json({ message: 'Playlist deleted successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

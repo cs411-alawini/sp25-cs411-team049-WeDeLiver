@@ -53,12 +53,3 @@ export const addMoodHealth = async (moodHealth: MoodHealth): Promise<void> => {
       throw error;
     }
   };
-
-export const deleteMoodHealthData = async (id: number, date: string): Promise<void> => {
-    try {
-        await pool.query('DELETE FROM MoodHealth WHERE UserID = ? AND Date = ?', [id, date]);
-    } catch (error) {
-        console.error('Error deleting mood health data:', error);
-        throw error;
-    }
-}   

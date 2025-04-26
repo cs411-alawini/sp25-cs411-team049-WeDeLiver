@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { IconDatabaseImport, IconSearch } from '@tabler/icons-react';
-import { TextInput } from '@mantine/core';
+import { IconDatabaseImport, IconSearch, IconTrash } from '@tabler/icons-react';
+import { TextInput, ActionIcon, Modal, Button, Group, Text } from '@mantine/core';
 import classes from './Navbar.module.css';
 import axios from 'axios';
 
@@ -10,6 +10,8 @@ export default function Navbar({ userId, setSelectedPlaylist }) {
   const [filteredPlaylists, setFilteredPlaylists] = useState([]);
   const [search, setSearch] = useState('');
   const [songs, setSongs] = useState([]);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [playlistToDelete, setPlaylistToDelete] = useState(null);
 
   useEffect(() => {
     async function fetchPlaylists() {
@@ -57,20 +59,59 @@ export default function Navbar({ userId, setSelectedPlaylist }) {
     }
   };
 
+  const handleDeleteClick = (playlist, event) => {
+    event.stopPropagation();
+    setPlaylistToDelete(playlist);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await axios.delete(`http://localhost:3007/api/playlist/${playlistToDelete.PlaylistID}`);
+      // Remove the deleted playlist from state
+      const updatedPlaylists = playlists.filter(p => p.PlaylistID !== playlistToDelete.PlaylistID);
+      setPlaylists(updatedPlaylists);
+      setFilteredPlaylists(updatedPlaylists);
+
+      // If the deleted playlist was active, select the first available playlist
+      if (playlistToDelete.PlaylistID === active && updatedPlaylists.length > 0) {
+        handleClick(updatedPlaylists[0]);
+      } else if (updatedPlaylists.length === 0) {
+        setActive('');
+        setSelectedPlaylist({ songs: [] });
+      }
+    } catch (error) {
+      console.error('Failed to delete playlist:', error);
+    } finally {
+      setDeleteModalOpen(false);
+      setPlaylistToDelete(null);
+    }
+  };
+
   const playlistLinks = filteredPlaylists.map((playlist) => (
-    <a
-      className={classes.link}
-      data-active={playlist.PlaylistID === active || undefined}
-      href="#"
-      key={playlist.PlaylistID}
-      onClick={(event) => {
-        event.preventDefault();
-        handleClick(playlist);
-      }}
-    >
-      <IconDatabaseImport className={classes.linkIcon} stroke={1.5} />
-      <span>{playlist.Date}</span>
-    </a>
+    <div key={playlist.PlaylistID} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <a
+        className={classes.link}
+        data-active={playlist.PlaylistID === active || undefined}
+        href="#"
+        onClick={(event) => {
+          event.preventDefault();
+          handleClick(playlist);
+        }}
+        style={{ flex: 1 }}
+      >
+        <IconDatabaseImport className={classes.linkIcon} stroke={1.5} />
+        <span>{playlist.Date}</span>
+      </a>
+      <ActionIcon
+        variant="subtle"
+        color="red"
+        onClick={(event) => handleDeleteClick(playlist, event)}
+        style={{ marginLeft: '8px' }}
+      >
+        <IconTrash size={16} />
+      </ActionIcon>
+    </div>
   ));
 
   return (
@@ -89,6 +130,29 @@ export default function Navbar({ userId, setSelectedPlaylist }) {
         />
         <div className={classes.navbarMain}>{playlistLinks}</div>
       </nav>
+
+      <Modal
+        opened={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setPlaylistToDelete(null);
+        }}
+        title="Delete Playlist"
+        centered
+      >
+        <Text>Are you sure you want to delete the playlist from {playlistToDelete?.Date}?</Text>
+        <Group justify="flex-end" mt="md">
+          <Button variant="default" onClick={() => {
+            setDeleteModalOpen(false);
+            setPlaylistToDelete(null);
+          }}>
+            Cancel
+          </Button>
+          <Button color="red" onClick={handleDeleteConfirm}>
+            Delete
+          </Button>
+        </Group>
+      </Modal>
     </div>
   );
 }

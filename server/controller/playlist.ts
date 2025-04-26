@@ -100,3 +100,25 @@ export const getSongByPlaylist = async (playlistId: number): Promise<Song[]> => 
 //     conn.release();
 //   }
 // };
+
+// Delete playlist
+export const deletePlaylist = async (playlistId: number): Promise<void> => {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        // First delete all songs associated with the playlist
+        await conn.query('DELETE FROM Playlist2Song WHERE PlaylistID = ?', [playlistId]);
+
+        // Then delete the playlist itself
+        await conn.query('DELETE FROM Playlist WHERE PlaylistID = ?', [playlistId]);
+
+        await conn.commit();
+    } catch (error) {
+        await conn.rollback();
+        console.error('Error deleting playlist:', error);
+        throw error;
+    } finally {
+        conn.release();
+    }
+};
