@@ -1,10 +1,73 @@
 .navbar {
   background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6));
-  height: 750px;
+  height: 100%;
   width: 300px;
   display: flex;
   flex-direction: column;
   border-right: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  transition: width 0.15s ease;
+  z-index: 200;
+  overflow: hidden;
+}
+
+.navbarContainer {
+  padding: 0 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.navbarContainer > div:first-child {
+  position: sticky;
+  top: 0;
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6));
+  padding: 0 10px;
+  z-index: 1;
+}
+
+.navbarContainer > div:first-child > div {
+  margin: 0;
+}
+
+@media (max-width: 576px) {
+  .navbar {
+    position: absolute;
+    left: -200px;
+    width: 200px;
+    background-color: var(--mantine-color-body);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 300;
+  }
+
+  .navbar.expanded {
+    left: 0;
+  }
+}
+
+.toggleButton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  background-color: transparent;
+  color: var(--mantine-color-blue-6);
+  display: none;
+}
+
+.toggleButton:hover {
+  background-color: transparent;
+}
+
+.toggleButton:active {
+  background-color: transparent;
+  transform: none;
+}
+
+@media (max-width: 576px) {
+  .toggleButton {
+    display: block;
+  }
 }
 
 .wrapper {

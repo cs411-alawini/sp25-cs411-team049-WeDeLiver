@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { IconDatabaseImport, IconSearch } from '@tabler/icons-react';
-import { TextInput } from '@mantine/core';
+import { TextInput, ActionIcon, Box } from '@mantine/core';
 import classes from './Navbar.module.css';
 import axios from 'axios';
 
@@ -10,6 +10,9 @@ export default function Navbar({ userId, setSelectedPlaylist }) {
   const [filteredPlaylists, setFilteredPlaylists] = useState([]);
   const [search, setSearch] = useState('');
   const [songs, setSongs] = useState([]);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const navbarRef = useRef(null);
+  const toggleButtonRef = useRef(null);
 
   useEffect(() => {
     async function fetchPlaylists() {
@@ -37,6 +40,25 @@ export default function Navbar({ userId, setSelectedPlaylist }) {
       fetchPlaylists();
     }
   }, [userId]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isExpanded &&
+        navbarRef.current &&
+        !navbarRef.current.contains(event.target) &&
+        toggleButtonRef.current &&
+        !toggleButtonRef.current.contains(event.target)
+      ) {
+        setIsExpanded(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isExpanded]);
 
   useEffect(() => {
     const filtered = playlists.filter((p) =>
@@ -74,21 +96,33 @@ export default function Navbar({ userId, setSelectedPlaylist }) {
   ));
 
   return (
-    <div>
-      <nav className={classes.navbar}>
-        <TextInput
-          placeholder="Search"
-          size="sm"
-          leftSection={<IconSearch size={12} stroke={1.5} />}
-          styles={{
-            input: { width: '270px', marginBottom: '1rem', marginTop: '0.5rem'},
-            section: { pointerEvents: 'none' }
-          }}
-          value={search}
-          onChange={(event) => setSearch(event.currentTarget.value)}
-        />
-        <div className={classes.navbarMain}>{playlistLinks}</div>
+    <>
+      <nav ref={navbarRef} className={`${classes.navbar} ${isExpanded ? classes.expanded : ''}`}>
+        <Box className={classes.navbarContainer}>
+          <TextInput
+            placeholder="Search"
+            size="sm"
+            leftSection={<IconSearch size={12} stroke={1.5} />}
+            styles={{
+              input: { width: '100%', marginBottom: '1rem', marginTop: '0.5rem'},
+              section: { pointerEvents: 'none' }
+            }}
+            value={search}
+            onChange={(event) => setSearch(event.currentTarget.value)}
+          />
+          <div className={classes.navbarMain}>{playlistLinks}</div>
+        </Box>
       </nav>
-    </div>
+      <ActionIcon
+        ref={toggleButtonRef}
+        className={classes.toggleButton}
+        variant="subtle"
+        size="lg"
+        onClick={() => setIsExpanded(!isExpanded)}
+        hiddenFrom="xs"
+      >
+        <IconSearch size={20} />
+      </ActionIcon>
+    </>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Paper, Title, Text, Loader, Group,SemiCircleProgress, Button } from '@mantine/core';
+import { Container, Paper, Title, Text, Loader, Group, SemiCircleProgress, Button } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,6 +7,7 @@ function HomePage({ userId }) {
   const [user, setUser] = useState(null);
   const [averages, setAverages] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 576);
   const navigate = useNavigate();
   const moodEmojiMap = {
     "Excellent": "😄",
@@ -36,6 +37,14 @@ function HomePage({ userId }) {
       .then(response => setAverages(response.data[0][0]))
       .catch(error => console.error('Error fetching mood averages:', error));
 
+    // Add resize event listener
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+
   }, [userId, navigate]);
   
 
@@ -52,7 +61,7 @@ function HomePage({ userId }) {
       setIsGenerating(false);
     }
   };
-//changed
+
   if (!user || !averages) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', padding: '2rem' }}>
@@ -63,6 +72,17 @@ function HomePage({ userId }) {
     </div>
   );
   }
+
+  // Mobile layout styles
+  const mobileContainerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '20px'
+  };
+
+  // Desktop layout - use the original Group component
+  const progressComponentStyle = isMobile ? { margin: '0 auto' } : {};
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', padding: '2rem' }}>
@@ -86,79 +106,151 @@ function HomePage({ userId }) {
         </Button>
 
         <Paper shadow="xs" p="md" mt="xl" withBorder>
-  <Title order={4} align="center" mb="md">
-    Your Mood Averages (Last 7 Days)
-  </Title>
+          <Title order={4} align="center" mb="md">
+            Your Mood Averages (Last 7 Days)
+          </Title>
 
-  <Group position="apart" grow>
-    <SemiCircleProgress
-      value={100 - Number(averages.AvgStress) * 10}
-      size={150}
-      thickness={15}
-      fillDirection="left-to-right"
-      orientation="up"
-      filledSegmentColor={
-      averages.AvgStress >= 7 ? '#ff6b6b' :  // Red for high stress
-      averages.AvgStress >= 4 ? '#ffa502' :  // Orange for medium
-      '#51cf66'                              // Green for low
-      }
-      label={`Stress: ${Number(averages.AvgStress).toFixed(2)}/10`}
-      emptySegmentColor="var(--mantine-color-gray-3)"
-    />
+          <div style={isMobile ? mobileContainerStyle : {}}>
+            {isMobile ? (
+              // Mobile view - stacked components
+              <>
+                <SemiCircleProgress
+                  value={100 - Number(averages.AvgStress) * 10}
+                  size={150}
+                  thickness={15}
+                  fillDirection="left-to-right"
+                  orientation="up"
+                  filledSegmentColor={
+                    averages.AvgStress >= 7 ? '#ff6b6b' :
+                    averages.AvgStress >= 4 ? '#ffa502' :
+                    '#51cf66'
+                  }
+                  label={`Stress: ${Number(averages.AvgStress).toFixed(2)}/10`}
+                  emptySegmentColor="var(--mantine-color-gray-3)"
+                  style={progressComponentStyle}
+                />
 
-    <SemiCircleProgress
-      value={100 - Number(averages.AvgAnxiety) * 10}
-      size={150}
-      thickness={15}
-      fillDirection="left-to-right"
-      orientation="up"
-      filledSegmentColor={
-        averages.AvgAnxiety >= 7 ? '#ff6b6b' :  // Red for high anxiety
-        averages.AvgAnxiety >= 4 ? '#ffa502' :  // Orange for medium
-        '#51cf66'                              // Green for low
-        }
-      label={`Anxiety: ${Number(averages.AvgAnxiety).toFixed(2)}/10`}
-      emptySegmentColor="var(--mantine-color-gray-3)"
-    />
+                <SemiCircleProgress
+                  value={100 - Number(averages.AvgAnxiety) * 10}
+                  size={150}
+                  thickness={15}
+                  fillDirection="left-to-right"
+                  orientation="up"
+                  filledSegmentColor={
+                    averages.AvgAnxiety >= 7 ? '#ff6b6b' :
+                    averages.AvgAnxiety >= 4 ? '#ffa502' :
+                    '#51cf66'
+                  }
+                  label={`Anxiety: ${Number(averages.AvgAnxiety).toFixed(2)}/10`}
+                  emptySegmentColor="var(--mantine-color-gray-3)"
+                  style={progressComponentStyle}
+                />
 
-    <SemiCircleProgress
-      value={(Number(averages.AvgSleep) / 10) * 100}
-      size={150}
-      thickness={15}
-      fillDirection="left-to-right"
-      orientation="up"
-      filledSegmentColor={
-        averages.AvgSleep >= 8 ? '#51cf66' :  // Green for a lot of sleep
-        averages.AvgSleep >= 6 ? '#ffa502' :  // Orange for medium
-        '#ff6b6b'                             // Green for low
-        }
-      label={`Sleep: ${Number(averages.AvgSleep).toFixed(2)} hrs`}
-      emptySegmentColor="var(--mantine-color-gray-3)"
-    />
+                <SemiCircleProgress
+                  value={(Number(averages.AvgSleep) / 10) * 100}
+                  size={150}
+                  thickness={15}
+                  fillDirection="left-to-right"
+                  orientation="up"
+                  filledSegmentColor={
+                    averages.AvgSleep >= 8 ? '#51cf66' :
+                    averages.AvgSleep >= 6 ? '#ffa502' :
+                    '#ff6b6b'
+                  }
+                  label={`Sleep: ${Number(averages.AvgSleep).toFixed(2)} hrs`}
+                  emptySegmentColor="var(--mantine-color-gray-3)"
+                  style={progressComponentStyle}
+                />
 
-    <SemiCircleProgress
-      value={Number(averages.AvgMood)}
-      size={150}
-      thickness={15}
-      fillDirection="left-to-right"
-      orientation="up"
-      filledSegmentColor={
-        averages.AvgMood >= 70 ? '#51cf66' :  // Green for high score
-        averages.AvgMood >= 40 ? '#ffa502' :  // Orange for medium
-        '#ff6b6b'                             // Green for low
-        }
-      label={`Mood: ${Number(averages.AvgMood).toFixed(2)}/100`}
-      emptySegmentColor="var(--mantine-color-gray-3)"
-    />
-  </Group>
+                <SemiCircleProgress
+                  value={Number(averages.AvgMood)}
+                  size={150}
+                  thickness={15}
+                  fillDirection="left-to-right"
+                  orientation="up"
+                  filledSegmentColor={
+                    averages.AvgMood >= 70 ? '#51cf66' :
+                    averages.AvgMood >= 40 ? '#ffa502' :
+                    '#ff6b6b'
+                  }
+                  label={`Mood: ${Number(averages.AvgMood).toFixed(2)}/100`}
+                  emptySegmentColor="var(--mantine-color-gray-3)"
+                  style={progressComponentStyle}
+                />
+              </>
+            ) : (
+              // Desktop view - original Group layout
+              <Group position="apart" grow>
+                <SemiCircleProgress
+                  value={100 - Number(averages.AvgStress) * 10}
+                  size={150}
+                  thickness={15}
+                  fillDirection="left-to-right"
+                  orientation="up"
+                  filledSegmentColor={
+                    averages.AvgStress >= 7 ? '#ff6b6b' :
+                    averages.AvgStress >= 4 ? '#ffa502' :
+                    '#51cf66'
+                  }
+                  label={`Stress: ${Number(averages.AvgStress).toFixed(2)}/10`}
+                  emptySegmentColor="var(--mantine-color-gray-3)"
+                />
 
-  {/* Mood Interpretation moved here */}
-  <Text align="center" mt="lg" size="lg" weight={600}>
-    Mood Interpretation: <span style={{ color: 'green' }}>
-      {moodEmojiMap[averages.MoodInterpretation]} {averages.MoodInterpretation}
-    </span>
-  </Text>
-</Paper>
+                <SemiCircleProgress
+                  value={100 - Number(averages.AvgAnxiety) * 10}
+                  size={150}
+                  thickness={15}
+                  fillDirection="left-to-right"
+                  orientation="up"
+                  filledSegmentColor={
+                    averages.AvgAnxiety >= 7 ? '#ff6b6b' :
+                    averages.AvgAnxiety >= 4 ? '#ffa502' :
+                    '#51cf66'
+                  }
+                  label={`Anxiety: ${Number(averages.AvgAnxiety).toFixed(2)}/10`}
+                  emptySegmentColor="var(--mantine-color-gray-3)"
+                />
+
+                <SemiCircleProgress
+                  value={(Number(averages.AvgSleep) / 10) * 100}
+                  size={150}
+                  thickness={15}
+                  fillDirection="left-to-right"
+                  orientation="up"
+                  filledSegmentColor={
+                    averages.AvgSleep >= 8 ? '#51cf66' :
+                    averages.AvgSleep >= 6 ? '#ffa502' :
+                    '#ff6b6b'
+                  }
+                  label={`Sleep: ${Number(averages.AvgSleep).toFixed(2)} hrs`}
+                  emptySegmentColor="var(--mantine-color-gray-3)"
+                />
+
+                <SemiCircleProgress
+                  value={Number(averages.AvgMood)}
+                  size={150}
+                  thickness={15}
+                  fillDirection="left-to-right"
+                  orientation="up"
+                  filledSegmentColor={
+                    averages.AvgMood >= 70 ? '#51cf66' :
+                    averages.AvgMood >= 40 ? '#ffa502' :
+                    '#ff6b6b'
+                  }
+                  label={`Mood: ${Number(averages.AvgMood).toFixed(2)}/100`}
+                  emptySegmentColor="var(--mantine-color-gray-3)"
+                />
+              </Group>
+            )}
+          </div>
+
+          {/* Mood Interpretation moved here */}
+          <Text align="center" mt="lg" size="lg" weight={600}>
+            Mood Interpretation: <span style={{ color: 'green' }}>
+              {moodEmojiMap[averages.MoodInterpretation]} {averages.MoodInterpretation}
+            </span>
+          </Text>
+        </Paper>
 
       </Container>
     </div>
