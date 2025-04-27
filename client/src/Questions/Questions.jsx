@@ -131,50 +131,66 @@ export default function SurveyForm({ userId }) {
   
 
   return (
-    <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Navbar userId={userId} setSelectedMood={setSelectedMood} refresh={refreshMoodList} />
-      <Container size="sm">
-        <Stack spacing="xl">
-          <Title order={2} align="center">Daily Wellness Survey</Title>
+    <Box style={{ 
+      display: 'flex', 
+      alignItems: 'flex-start', 
+      justifyContent: 'top',
+      position: 'relative',
+      width: '100%',
+      minHeight: '100vh'
+    }}>
+      <div style={{ 
+        display: 'flex', 
+        width: '100%', 
+        maxWidth: '1200px', 
+        margin: '0 auto',
+        position: 'relative',
+        height: 'calc(100vh - 60px)', // Subtract header height
+      }}>
+        <Navbar userId={userId} setSelectedMood={setSelectedMood} refresh={refreshMoodList} />
+        <Container size="sm" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+          <Stack spacing="xl">
+            <Title order={2} align="center">Daily Wellness Survey</Title>
 
-          <MoodSliders
-            stress={stress}
-            setStress={setStress}
-            anxiety={anxiety}
-            setAnxiety={setAnxiety}
-            sleep={sleep}
-            setSleep={setSleep}
-          />
+            <MoodSliders
+              stress={stress}
+              setStress={setStress}
+              anxiety={anxiety}
+              setAnxiety={setAnxiety}
+              sleep={sleep}
+              setSleep={setSleep}
+            />
 
-          <Center>
-            <Stack spacing="sm">
-              {!selectedMood && !isExistingEntry && (
-                <Button size="md" onClick={handleSubmit}>
-                  Submit
-                </Button>
-              )}
-              {selectedMood?.date === date && isExistingEntry && (
-                <Button size="md" onClick={handleSubmit}>
-                  Update Entry
-                </Button>
-              )}
-              {selectedMood && (
-                <Button
-                  size="md"
-                  color="red"
-                  variant="outline"
-                  onClick={handleDelete}
-                >
-                  Delete Entry
-                </Button>
-              )}
-            </Stack>
-          </Center>
+            <Center>
+              <Stack spacing="sm">
+                {!selectedMood && !isExistingEntry && (
+                  <Button size="md" onClick={handleSubmit}>
+                    Submit
+                  </Button>
+                )}
+                {selectedMood?.date === date && isExistingEntry && (
+                  <Button size="md" onClick={handleSubmit}>
+                    Update Entry
+                  </Button>
+                )}
+                {selectedMood && (
+                  <Button
+                    size="md"
+                    color="red"
+                    variant="outline"
+                    onClick={handleDelete}
+                  >
+                    Delete Entry
+                  </Button>
+                )}
+              </Stack>
+            </Center>
 
 
 
-        </Stack>
-      </Container>
+          </Stack>
+        </Container>
+      </div>
     </Box>
   );
 }
