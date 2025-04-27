@@ -24,11 +24,21 @@ export default function Navbar({ userId, setSelectedPlaylist }) {
           Date: new Date(playlist.Date).toISOString().split('T')[0],
         }));
 
-        setPlaylists(structuredPlaylist);
-        setFilteredPlaylists(structuredPlaylist);
+        // Sort playlists by Date (descending) and then by PlaylistID (descending)
+        const sortedPlaylists = structuredPlaylist.sort((a, b) => {
+          // First compare by Date
+          const dateComparison = new Date(b.Date) - new Date(a.Date);
+          if (dateComparison !== 0) return dateComparison;
 
-        if (structuredPlaylist.length > 0) {
-          handleClick(structuredPlaylist[0]);
+          // If dates are equal, compare by PlaylistID
+          return b.PlaylistID - a.PlaylistID;
+        });
+
+        setPlaylists(sortedPlaylists);
+        setFilteredPlaylists(sortedPlaylists);
+
+        if (sortedPlaylists.length > 0) {
+          handleClick(sortedPlaylists[0]);
         }
       } catch (error) {
         console.error('Failed to fetch playlists:', error);
