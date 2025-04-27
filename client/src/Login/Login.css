@@ -28,12 +28,29 @@ button {
   cursor: pointer; /* Pointer cursor on hover */
   border-radius: 8px; /* Rounded corners */
   transition: background-color 0.3s ease; /* Smooth transition for background color */
+  width: 100%; /* Make buttons take full width */
 }
 
 button:hover {
   background-color: #45a049; /* Darker green on hover */
 }
 
+/* Override Mantine button colors */
+.mantine-Button-root[data-color="blue"] {
+  background-color: #228be6;
+}
+
+.mantine-Button-root[data-color="blue"]:hover {
+  background-color: #1c7ed6;
+}
+
+.mantine-Button-root[data-color="green"] {
+  background-color: #40c057;
+}
+
+.mantine-Button-root[data-color="green"]:hover {
+  background-color: #37b24d;
+}
 
 .text-input {
   background-color: #fff; /* White background */
@@ -49,4 +66,24 @@ button:hover {
   border-color: #45a049; /* Darker green border on focus */
   box-shadow: 0 0 5px rgba(72, 192, 72, 0.5); /* Subtle shadow on focus */
   outline: none; /* Remove the default focus outline */
+}
+
+/* Responsive styles */
+@media (max-width: 576px) {
+  .mantine-Stack-root {
+    width: 100%;
+  }
+
+  .mantine-TextInput-root {
+    width: 100%;
+  }
+
+  .mantine-Group-root {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mantine-Button-root {
+    width: 100%;
+  }
 }

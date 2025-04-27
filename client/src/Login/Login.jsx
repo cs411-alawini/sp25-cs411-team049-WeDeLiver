@@ -50,7 +50,7 @@ function Login({ onLogin }) {
               🔐 User Lookup Portal
             </Title>
 
-            <Group>
+            <Stack spacing="md">
               <TextInput
                 value={id}
                 onChange={(e) => setId(e.target.value)}
@@ -60,15 +60,23 @@ function Login({ onLogin }) {
                 classNames={{ input: 'text-input' }}
               />
               
-              <Box>
-                <Button onClick={handleLogin}>
+              <Group position="center" style={{ width: '100%' }}>
+                <Button
+                  onClick={handleLogin}
+                  color="blue"
+                  style={{ width: '100%' }}
+                >
                   Login
                 </Button>
-                <Button onClick={() => setModalOpen(true)}>  {/* Open the modal when Create User is clicked */}
+                <Button
+                  onClick={() => setModalOpen(true)}
+                  color="green"
+                  style={{ width: '100%' }}
+                >
                   Create User
                 </Button>
-              </Box>
-            </Group>
+              </Group>
+            </Stack>
 
             {message && (
               <Notification color="red" radius="md" mt="md">
