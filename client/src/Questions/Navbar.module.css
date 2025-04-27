@@ -6,7 +6,7 @@
   flex-direction: column;
   border-right: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
   transition: width 0.15s ease;
-  z-index: 1000;
+  z-index: 200;
   overflow: hidden;
 }
 
@@ -32,12 +32,12 @@
 
 @media (max-width: 576px) {
   .navbar {
-    position: fixed;
-    top: 60px; /* Height of app header */
+    position: absolute;
     left: -200px;
     width: 200px;
     background-color: var(--mantine-color-body);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 300;
   }
 
   .navbar.expanded {
