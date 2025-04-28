@@ -1,7 +1,7 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
-import { Container, Title, Slider, Button, Stack,Box,Center, TextInput, Group, ActionIcon } from '@mantine/core';
+import { Container, Title, Slider, Button, Stack, Box, Center, Modal, Text, TextInput, Group, ActionIcon } from '@mantine/core';
 import Navbar from './Navbar'; 
 import axios from 'axios'; 
 import MoodSliders from './MoodSliders'; 
@@ -10,6 +10,7 @@ import { IconSend, IconArrowRight } from '@tabler/icons-react';
 
 export default function SurveyForm({ userId }) {
   const navigate = useNavigate();
+  const [showPlaylistModal, setShowPlaylistModal] = useState(false);
 
   useEffect(() => {
     if (!userId) {
@@ -98,11 +99,14 @@ export default function SurveyForm({ userId }) {
     try {
       await axios.post(`http://localhost:3007/api/moodhealth/${userId}`, moodData);
       setIsExistingEntry(true);
-      showNotification({
-        title: 'Success',
-        message: isExistingEntry ? 'Mood entry updated successfully!' : 'Mood entry submitted!',
-        color: 'teal',
-      });
+      // showNotification({
+      //   title: 'Success',
+      //   message: isExistingEntry ? 'Mood entry updated successfully!' : 'Mood entry submitted!',
+      //   color: 'teal',
+      // });
+
+      // Show playlist modal after successful submission
+      setShowPlaylistModal(true);
       setRefreshMoodList((prev) => !prev);
     } catch (error) {
       console.error('Error submitting mood data:', error);
@@ -186,8 +190,19 @@ export default function SurveyForm({ userId }) {
   // Check if the selected date is today
   const isTodaySelected = selectedMood?.date === date;
 
+
+  const handleViewPlaylist = () => {
+    setShowPlaylistModal(false);
+    navigate('/playlist');
+  };
+  
   return (
-    <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <>
+    <Box style={{ 
+      display: 'flex', 
+      width: '100%',
+      minHeight: '100vh'
+    }}>
       <Navbar
         userId={userId}
         setSelectedMood={setSelectedMood}
@@ -195,8 +210,8 @@ export default function SurveyForm({ userId }) {
         isExistingEntry={isExistingEntry}
         moodEntries={moodEntries}
       />
-      <Container size="sm">
-        <Stack spacing="xl">
+      <Container size="sm" > 
+        <Stack spacing="xl" style={{ width: '100%' , marginTop: '8rem' }}>
           <Title order={2} align="center">Daily Wellness Survey</Title>
           <Box>
             <Title order={5} mb="xs">Predict your mood with AI:</Title>
@@ -227,7 +242,6 @@ export default function SurveyForm({ userId }) {
             setSleep={setSleep}
             isEditable={isTodaySelected}
           />
-
           <Center>
             <Stack spacing="sm">
               {selectedMood?.date === date && !isExistingEntry && (
@@ -245,5 +259,37 @@ export default function SurveyForm({ userId }) {
         </Stack>
       </Container>
     </Box>
+    <Modal
+      opened={showPlaylistModal}
+      onClose={() => setShowPlaylistModal(false)}
+      title="New Playlist Available!"
+      centered
+      overlayProps={{
+        blur: 3,
+      }}
+      styles={{
+        title: {
+          fontSize: '1.5rem',
+          fontWeight: 600,
+        },
+        content: {
+          padding: '2rem',
+        },
+      }}
+    >
+    <Text size="lg" mb="xl">
+      Your new personalized playlist is ready!
+    </Text>
+    <Button
+      fullWidth
+      onClick={handleViewPlaylist}
+      variant="gradient"
+      gradient={{ from: 'indigo', to: 'cyan' }}
+      size="lg"
+    >
+      View Playlist
+    </Button>
+  </Modal>
+  </>
   );
 }

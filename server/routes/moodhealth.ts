@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import { pool } from '../db/db';
+import { generatePlaylist } from '../controller/songRecommendationController';
 import { getMoodHealthByUserId, addMoodHealth, getMoodHealthByText } from '../controller/moodhealth';
 import axios from 'axios';
 import OpenAI from 'openai';
@@ -28,7 +29,20 @@ router.post('/:id', async (req: Request, res: Response) => {
     const newMoodHealth = { userId: id, date, stressLevel, anxietyLevel, sleepHours, moodScore: 0 }; // moodScore will be calculated in the controller
     try {
         await addMoodHealth(newMoodHealth);
+        await generatePlaylist(id);
         res.status(201).json({ message: "Mood health data added" });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+//delete mood health data for a user
+router.delete('/:id/:date', async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id);
+    const date = req.params.date;
+    try {
+        await pool.query('DELETE FROM MoodHealth WHERE UserID = ? AND Date = ?', [id, date]);
+        res.status(200).json({ message: "Mood health data deleted" });
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
     }
