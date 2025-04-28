@@ -183,6 +183,9 @@ export default function SurveyForm({ userId }) {
   
   
 
+  // Check if the selected date is today
+  const isTodaySelected = selectedMood?.date === date;
+
   return (
     <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Navbar
@@ -222,6 +225,7 @@ export default function SurveyForm({ userId }) {
             setAnxiety={setAnxiety}
             sleep={sleep}
             setSleep={setSleep}
+            isEditable={isTodaySelected}
           />
 
           <Center>
