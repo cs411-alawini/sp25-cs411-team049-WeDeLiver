@@ -77,7 +77,7 @@ export default function SurveyForm({ userId }) {
     };
 
     fetchMoodData();
-  }, [userId, date]);
+  }, [userId, date, refreshMoodList]);
 
   useEffect(() => {
     if (selectedMood) {
@@ -90,7 +90,7 @@ export default function SurveyForm({ userId }) {
   const handleSubmit = async () => {
     const moodData = {
       userId,
-      date,
+      date: selectedMood.date,
       stressLevel: stress,
       anxietyLevel: anxiety,
       sleepHours: sleep,

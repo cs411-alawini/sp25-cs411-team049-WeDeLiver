@@ -4,7 +4,7 @@ import { TextInput } from '@mantine/core';
 import classes from './Navbar.module.css';
 import axios from 'axios';
 
-export default function Navbar({ userId, setSelectedMood, refresh, isExistingEntry, moodEntries }) {
+export default function Navbar({ userId, setSelectedMood, isExistingEntry, moodEntries }) {
   const [activeDate, setActiveDate] = useState('');
   const [filteredEntries, setFilteredEntries] = useState([]);
   const [search, setSearch] = useState('');

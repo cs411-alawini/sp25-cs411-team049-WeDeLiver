@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Paper, Title, Text, Loader, Group,SemiCircleProgress, Button } from '@mantine/core';
+import { Container, Paper, Title, Text, Group,SemiCircleProgress, Button } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
