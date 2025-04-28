@@ -265,16 +265,6 @@ export default function SurveyForm({ userId }) {
                   Update Entry
                 </Button>
               )}
-              {selectedMood && (
-                <Button
-                  size="md"
-                  color="red"
-                  variant="outline"
-                  onClick={handleDelete}
-                >
-                  Delete Entry
-                </Button>
-              )}
             </Stack>
           </Center>
         </Stack>
