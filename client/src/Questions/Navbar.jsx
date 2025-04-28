@@ -4,38 +4,17 @@ import { TextInput } from '@mantine/core';
 import classes from './Navbar.module.css';
 import axios from 'axios';
 
-export default function Navbar({ userId, setSelectedMood, refresh }) {
+export default function Navbar({ userId, setSelectedMood, refresh, isExistingEntry, moodEntries }) {
   const [activeDate, setActiveDate] = useState('');
-  const [moodEntries, setMoodEntries] = useState([]);
   const [filteredEntries, setFilteredEntries] = useState([]);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    async function fetchMoodHealth() {
-      try {
-        const response = await axios.get(`http://localhost:3007/api/moodhealth/${userId}`);
-        const fetchedData = response.data || [];
-
-        const structuredData = fetchedData.map((entry) => ({
-          date: new Date(entry.Date).toISOString().split('T')[0],
-          ...entry,
-        }));
-
-        setMoodEntries(structuredData);
-        setFilteredEntries(structuredData);
-
-        if (structuredData.length > 0 && !activeDate) {
-          handleClick(structuredData[0]);
-        }
-      } catch (error) {
-        console.error('Failed to fetch mood entries:', error);
-      }
+    setFilteredEntries(moodEntries);
+    if (moodEntries.length > 0 && !activeDate) {
+      handleClick(moodEntries[0]);
     }
-
-    if (userId) {
-      fetchMoodHealth();
-    }
-  }, [userId, refresh]);
+  }, [moodEntries]);
 
   useEffect(() => {
     const filtered = moodEntries.filter((entry) =>

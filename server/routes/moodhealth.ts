@@ -34,19 +34,6 @@ router.post('/:id', async (req: Request, res: Response) => {
     }
 });
 
-
-//delete mood health data for a user
-router.delete('/:id/:date', async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
-    const date = req.params.date;
-    try {
-        await pool.query('DELETE FROM MoodHealth WHERE UserID = ? AND Date = ?', [id, date]);
-        res.status(200).json({ message: "Mood health data deleted" });
-    } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
-    }
-});
-
 // Get average of latest 7 mood entries for a user
 router.get('/average/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);

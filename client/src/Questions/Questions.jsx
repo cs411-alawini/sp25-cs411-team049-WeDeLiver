@@ -24,6 +24,7 @@ export default function SurveyForm({ userId }) {
   const [loading, setLoading] = useState(true);
   const [selectedMood, setSelectedMood] = useState(null);
   const [refreshMoodList, setRefreshMoodList] = useState(false);
+  const [moodEntries, setMoodEntries] = useState([]);
   const [moodInput, setMoodInput] = useState(''); // For mood input analysis
 
   const date = new Date().toISOString().split('T')[0];
@@ -32,10 +33,17 @@ export default function SurveyForm({ userId }) {
     const fetchMoodData = async () => {
       try {
         const response = await axios.get(`http://localhost:3007/api/moodhealth/${userId}`);
-        const todayData = response.data.find((entry) => {
+        const fetchedData = response.data || [];
+        const todayData = fetchedData.find((entry) => {
           const entryDateStr = new Date(entry.Date).toISOString().split('T')[0];
           return entryDateStr === date;
         });
+
+        const structuredData = fetchedData.map((entry) => ({
+          date: new Date(entry.Date).toISOString().split('T')[0],
+          ...entry,
+        }));
+
         if (todayData) {
           setStress(todayData.StressLevel);
           setAnxiety(todayData.AnxietyLevel);http://localhost:3000/questions#
@@ -47,8 +55,20 @@ export default function SurveyForm({ userId }) {
           });
         } else {
           setIsExistingEntry(false);
-          setSelectedMood(null);
+          // Add default entry for current date
+          const defaultEntry = {
+            date: date,
+            UserID: userId,
+            StressLevel: 0,
+            AnxietyLevel: 0,
+            SleepHours: 0,
+            MoodScore: 0
+          };
+          structuredData.unshift(defaultEntry);
+          setSelectedMood(defaultEntry);
         }
+
+        setMoodEntries(structuredData);
       } catch (error) {
         console.error('Failed to fetch mood data:', error);
       } finally {
@@ -64,17 +84,6 @@ export default function SurveyForm({ userId }) {
       setStress(selectedMood.StressLevel);
       setAnxiety(selectedMood.AnxietyLevel);
       setSleep(selectedMood.SleepHours);
-
-      const selectedDateStr = new Date(selectedMood.date).toISOString().split('T')[0];
-      const todayStr = new Date().toISOString().split('T')[0];
-
-      if (selectedDateStr === todayStr) {
-        setIsExistingEntry(true); 
-      } else {
-        setIsExistingEntry(false); 
-      }
-    } else {
-      setIsExistingEntry(false);
     }
   }, [selectedMood]);
 
@@ -176,7 +185,13 @@ export default function SurveyForm({ userId }) {
 
   return (
     <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Navbar userId={userId} setSelectedMood={setSelectedMood} refresh={refreshMoodList} />
+      <Navbar
+        userId={userId}
+        setSelectedMood={setSelectedMood}
+        refresh={refreshMoodList}
+        isExistingEntry={isExistingEntry}
+        moodEntries={moodEntries}
+      />
       <Container size="sm">
         <Stack spacing="xl">
           <Title order={2} align="center">Daily Wellness Survey</Title>
@@ -211,7 +226,7 @@ export default function SurveyForm({ userId }) {
 
           <Center>
             <Stack spacing="sm">
-              {!selectedMood && !isExistingEntry && (
+              {selectedMood?.date === date && !isExistingEntry && (
                 <Button size="md" onClick={handleSubmit}>
                   Submit
                 </Button>
@@ -221,21 +236,8 @@ export default function SurveyForm({ userId }) {
                   Update Entry
                 </Button>
               )}
-              {selectedMood && (
-                <Button
-                  size="md"
-                  color="red"
-                  variant="outline"
-                  onClick={handleDelete}
-                >
-                  Delete Entry
-                </Button>
-              )}
             </Stack>
           </Center>
-
-
-
         </Stack>
       </Container>
     </Box>
