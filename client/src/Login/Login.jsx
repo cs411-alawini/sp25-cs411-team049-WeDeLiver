@@ -7,6 +7,7 @@ import './Login.css'; // Import your CSS file for additional styles
 function Login({ onLogin }) {
   const [id, setId] = useState('');
   const [name, setName] = useState('');  // New state for the user's name
+  const [country, setCountry] = useState('');  // New state for the user's country
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState('');
   const [modalOpen, setModalOpen] = useState(false);  // State to control modal visibility
@@ -30,7 +31,7 @@ function Login({ onLogin }) {
   // Handle user creation
   const handleCreate = async () => {
     try {
-      const newUser = { name };  // Include the name in the newUser object
+      const newUser = { name, country };  // Include the name in the newUser object
       const response = await axios.post('http://localhost:3007/api/user', newUser);
       setUser(response.data);
       setMessage('User created successfully');
@@ -92,7 +93,15 @@ function Login({ onLogin }) {
           placeholder="Enter your name"
           withAsterisk
         />
-        <Group position="right" mt="md">
+        <TextInput
+            label="Country"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            placeholder="Enter your country"
+            withAsterisk
+            mt="md"
+        />
+        <Group position="left" mt="md">
           <Button onClick={handleCreate}>Create User</Button>
         </Group>
       </Modal>

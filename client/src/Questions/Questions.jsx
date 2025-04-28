@@ -1,10 +1,12 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
-import { Container, Title, Slider, Button, Stack,Box,Center } from '@mantine/core';
+import { Container, Title, Slider, Button, Stack,Box,Center, TextInput, Group, ActionIcon } from '@mantine/core';
 import Navbar from './Navbar'; 
 import axios from 'axios'; 
 import MoodSliders from './MoodSliders'; 
+import { IconSend, IconArrowRight } from '@tabler/icons-react';
+
 
 export default function SurveyForm({ userId }) {
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ export default function SurveyForm({ userId }) {
   const [loading, setLoading] = useState(true);
   const [selectedMood, setSelectedMood] = useState(null);
   const [refreshMoodList, setRefreshMoodList] = useState(false);
+  const [moodInput, setMoodInput] = useState(''); // For mood input analysis
 
   const date = new Date().toISOString().split('T')[0];
 
@@ -35,7 +38,7 @@ export default function SurveyForm({ userId }) {
         });
         if (todayData) {
           setStress(todayData.StressLevel);
-          setAnxiety(todayData.AnxietyLevel);
+          setAnxiety(todayData.AnxietyLevel);http://localhost:3000/questions#
           setSleep(todayData.SleepHours);
           setIsExistingEntry(true);
           setSelectedMood({
@@ -127,6 +130,47 @@ export default function SurveyForm({ userId }) {
       });
     }
   };
+
+  const analyzeMood = async () => {
+    if (!moodInput.trim()) {
+      showNotification({
+        title: 'Error',
+        message: 'Please enter your mood description.',
+        color: 'red',
+      });
+      return;
+    }
+    try {
+      const response = await axios.post(`http://localhost:3007/api/moodhealth/text/${userId}`, {
+        text: moodInput
+      });
+  
+      const { stressLevel, anxietyLevel, sleepHours } = response.data;
+
+      console.log("stressLevel:", stressLevel); 
+      console.log("anxietyLevel:", anxietyLevel);
+      console.log("sleepHours:", sleepHours);
+  
+      setStress(stressLevel);
+      setAnxiety(anxietyLevel);
+      setSleep(sleepHours);
+  
+      showNotification({
+        title: 'Analysis Complete',
+        message: 'Mood metrics updated based on your description.',
+        color: 'teal',
+      });
+      
+      setMoodInput('');
+    } catch (error) {
+      console.error('Error analyzing mood:', error);
+      showNotification({
+        title: 'Error',
+        message: 'Mood analysis failed. Please try again.',
+        color: 'red',
+      });
+    }
+  };
   
   
 
@@ -136,7 +180,26 @@ export default function SurveyForm({ userId }) {
       <Container size="sm">
         <Stack spacing="xl">
           <Title order={2} align="center">Daily Wellness Survey</Title>
-
+          <Box>
+            <Title order={5} mb="xs">Predict your mood with AI:</Title>
+            <Group align="flex-end" grow>
+              <TextInput
+                radius="xl"
+                size="md"
+                placeholder="Tell us about your day..."
+                value={moodInput}
+                onChange={(e) => setMoodInput(e.target.value)}
+                style={{ flexGrow: 3 }}
+                leftSection={<IconArrowRight size={18} stroke={1.5} />}
+                rightSectionWidth={42}
+                rightSection={
+                  <ActionIcon size={32} radius="xl" variant="filled" onClick={analyzeMood}>
+                    <IconSend size={18} stroke={1.5} />
+                  </ActionIcon>
+                }
+              />
+            </Group>
+          </Box>
           <MoodSliders
             stress={stress}
             setStress={setStress}
