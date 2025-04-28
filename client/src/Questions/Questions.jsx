@@ -200,20 +200,9 @@ export default function SurveyForm({ userId }) {
     <>
     <Box style={{ 
       display: 'flex', 
-      alignItems: 'flex-start', 
-      justifyContent: 'top',
-      position: 'relative',
       width: '100%',
       minHeight: '100vh'
     }}>
-      <div style={{ 
-        display: 'flex', 
-        width: '100%', 
-        maxWidth: '1200px', 
-        margin: '0 auto',
-        position: 'relative',
-        height: 'calc(100vh - 60px)', // Subtract header height
-      }}>
       <Navbar
         userId={userId}
         setSelectedMood={setSelectedMood}
@@ -221,8 +210,8 @@ export default function SurveyForm({ userId }) {
         isExistingEntry={isExistingEntry}
         moodEntries={moodEntries}
       />
-      <Container size="sm" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-        <Stack spacing="xl">
+      <Container size="sm" > 
+        <Stack spacing="xl" style={{ width: '100%' , marginTop: '8rem' }}>
           <Title order={2} align="center">Daily Wellness Survey</Title>
           <Box>
             <Title order={5} mb="xs">Predict your mood with AI:</Title>
@@ -269,7 +258,6 @@ export default function SurveyForm({ userId }) {
           </Center>
         </Stack>
       </Container>
-      </div>
     </Box>
     <Modal
       opened={showPlaylistModal}
