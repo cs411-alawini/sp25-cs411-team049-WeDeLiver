@@ -5,6 +5,8 @@ Team049-WeDeLiver
 
 Megan Tang, Sydney Yu, Yu-Liang Lin, Bo-Syuan Hou
 
+Project Video: [youtube link](https://www.youtube.com/watch?v=RbTn6stAywM)
+
 
 - Please list out changes in the directions of your project if the final project is different from your original proposal (based on your stage 1 proposal submission).
 
